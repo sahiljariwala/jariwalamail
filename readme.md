@@ -14,7 +14,7 @@ A single-file, zero-dependency coming soon page for [jariwalamail.com](https://j
 
 ## Features
 
-- **Zero dependencies** — single `coming-soon.html` file, no build step, no npm, no framework
+- **Zero dependencies** — single `index.html` file, no build step, no npm, no framework
 - **Custom cursor** — gold dot with a lagging ring; hover state on interactive elements
 - **Animated grid** — golden dot-intersected grid drawn on `<canvas>` as a structural backdrop
 - **Floating particles** — slow-drifting `<canvas>` particles for atmospheric depth
@@ -31,9 +31,8 @@ A single-file, zero-dependency coming soon page for [jariwalamail.com](https://j
 
 ```
 jariwalamail-coming-soon/
-├── coming-soon.html   # The entire page — HTML, CSS, and JS in one file
-├── README.md
-└── preview.png        # Optional screenshot for repo preview
+├── index.html   # The entire page — HTML, CSS, and JS in one file
+└── README.md
 ```
 
 ---
@@ -45,9 +44,9 @@ No build tools required. Just open the file.
 ```bash
 git clone https://github.com/your-username/jariwalamail-coming-soon.git
 cd jariwalamail-coming-soon
-open coming-soon.html   # macOS
-# or: xdg-open coming-soon.html (Linux)
-# or: start coming-soon.html (Windows)
+open index.html   # macOS
+# or: xdg-open index.html (Linux)
+# or: start index.html (Windows)
 ```
 
 For a local dev server with live reload:
@@ -60,10 +59,10 @@ python3 -m http.server 8000
 npx serve .
 
 # Using VS Code
-# Install the "Live Server" extension, then right-click coming-soon.html → Open with Live Server
+# Install the "Live Server" extension, then right-click index.html → Open with Live Server
 ```
 
-Then visit `http://localhost:8000/coming-soon.html`.
+Then visit `http://localhost:8000/index.html`.
 
 ---
 
@@ -76,7 +75,7 @@ Since this is a single static HTML file, it deploys anywhere.
 1. Push the repo to GitHub
 2. Go to **Settings → Pages**
 3. Set source to `main` branch, root folder
-4. GitHub will serve `index.html` by default — rename `coming-soon.html` to `index.html`
+4. GitHub will serve `index.html` by default
 
 ### Netlify (drag-and-drop)
 
@@ -108,7 +107,7 @@ vercel --prod
 
 ## Customization
 
-All customization lives inside `coming-soon.html`. No config files, no environment variables.
+All customization lives inside `index.html`. No config files, no environment variables.
 
 ### Brand name & tagline
 
