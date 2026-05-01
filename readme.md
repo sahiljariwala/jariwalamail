@@ -8,8 +8,6 @@ A single-file, zero-dependency coming soon page for [jariwalamail.com](https://j
 
 > **Live:** [jariwalamail.com](https://jariwalamail.com)
 
-![Dark obsidian background, gold grid lines, large serif headline reading "Something Remarkable is Coming"](preview.png)
-
 ---
 
 ## Features
@@ -30,7 +28,7 @@ A single-file, zero-dependency coming soon page for [jariwalamail.com](https://j
 ## File Structure
 
 ```
-jariwalamail-coming-soon/
+jariwalamail/
 ├── index.html   # The entire page — HTML, CSS, and JS in one file
 └── README.md
 ```
@@ -42,8 +40,8 @@ jariwalamail-coming-soon/
 No build tools required. Just open the file.
 
 ```bash
-git clone https://github.com/your-username/jariwalamail-coming-soon.git
-cd jariwalamail-coming-soon
+git clone https://github.com/sahiljariwala/jariwalamail.git
+cd jariwalamail
 open index.html   # macOS
 # or: xdg-open index.html (Linux)
 # or: start index.html (Windows)
