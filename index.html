@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JariwалаMail — Something Extraordinary is Coming</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Mono:wght@300;400&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #0a0a0a;
+    --paper: #f5f0e8;
+    --gold: #c9a84c;
+    --gold-light: #e8cc82;
+    --dim: #1a1a1a;
+    --mid: #888;
+    --border: rgba(201,168,76,0.18);
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'Outfit', sans-serif;
+    overflow: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  #cursor {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    background: var(--gold);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: width 0.2s, height 0.2s, background 0.2s;
+  }
+  #cursor-ring {
+    position: fixed;
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--gold);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: all 0.08s ease-out;
+    opacity: 0.5;
+  }
+  body:hover #cursor { opacity: 1; }
+
+  /* Grid background */
+  #grid-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    opacity: 0.18;
+  }
+
+  /* Noise texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.6;
+  }
+
+  /* Corner marks */
+  .corner {
+    position: fixed;
+    width: 24px;
+    height: 24px;
+    z-index: 10;
+    opacity: 0.4;
+  }
+  .corner--tl { top: 24px; left: 24px; border-top: 1px solid var(--gold); border-left: 1px solid var(--gold); }
+  .corner--tr { top: 24px; right: 24px; border-top: 1px solid var(--gold); border-right: 1px solid var(--gold); }
+  .corner--bl { bottom: 24px; left: 24px; border-bottom: 1px solid var(--gold); border-left: 1px solid var(--gold); }
+  .corner--br { bottom: 24px; right: 24px; border-bottom: 1px solid var(--gold); border-right: 1px solid var(--gold); }
+
+  /* Top bar */
+  #topbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 28px 48px;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.3s forwards;
+  }
+
+  .logo-type {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-transform: uppercase;
+    font-weight: 300;
+  }
+
+  .status-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--mid);
+    text-transform: uppercase;
+  }
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  /* Main stage */
+  #stage {
+    position: relative;
+    z-index: 10;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 24px;
+  }
+
+  .eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.45em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.6s forwards;
+  }
+
+  .headline {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(52px, 10vw, 128px);
+    font-weight: 900;
+    line-height: 0.92;
+    color: var(--paper);
+    margin-bottom: 8px;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.8s forwards;
+    letter-spacing: -0.02em;
+  }
+  .headline em {
+    font-style: italic;
+    color: var(--gold-light);
+  }
+
+  .subline {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(14px, 2.5vw, 22px);
+    font-weight: 400;
+    color: rgba(245,240,232,0.45);
+    letter-spacing: 0.05em;
+    margin-bottom: 56px;
+    font-style: italic;
+    opacity: 0;
+    animation: fadeUp 1s ease 1s forwards;
+  }
+
+  /* Divider */
+  .rule {
+    width: 1px;
+    height: 56px;
+    background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+    margin: 0 auto 40px;
+    opacity: 0;
+    animation: fadeIn 1s ease 1.2s forwards;
+  }
+
+  /* Description */
+  .description {
+    font-size: 14px;
+    font-weight: 300;
+    color: rgba(245,240,232,0.5);
+    max-width: 420px;
+    line-height: 1.85;
+    letter-spacing: 0.04em;
+    margin-bottom: 56px;
+    opacity: 0;
+    animation: fadeUp 1s ease 1.3s forwards;
+  }
+
+  /* Notify form */
+  #notify-form {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 72px;
+    opacity: 0;
+    animation: fadeUp 1s ease 1.5s forwards;
+    position: relative;
+  }
+  #notify-form input {
+    flex: 1;
+    background: rgba(245,240,232,0.05);
+    border: 1px solid var(--border);
+    border-right: none;
+    color: var(--paper);
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    padding: 14px 20px;
+    outline: none;
+    transition: border-color 0.3s, background 0.3s;
+  }
+  #notify-form input::placeholder { color: rgba(245,240,232,0.25); }
+  #notify-form input:focus {
+    background: rgba(201,168,76,0.07);
+    border-color: var(--gold);
+  }
+  #notify-form button {
+    background: var(--gold);
+    border: 1px solid var(--gold);
+    color: var(--ink);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    padding: 14px 22px;
+    cursor: none;
+    transition: background 0.3s, transform 0.15s;
+    white-space: nowrap;
+  }
+  #notify-form button:hover { background: var(--gold-light); transform: translateX(1px); }
+  #notify-form button:active { transform: scale(0.98); }
+  #success-msg {
+    display: none;
+    position: absolute;
+    inset: 0;
+    background: rgba(10,10,10,0.95);
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    color: var(--gold);
+    text-transform: uppercase;
+    border: 1px solid var(--border);
+  }
+  /* Bottom bar */
+  #bottombar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 48px;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.5s forwards;
+  }
+  .bottom-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    color: rgba(245,240,232,0.2);
+    text-transform: uppercase;
+  }
+
+  /* Decorative orbs */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 2;
+  }
+  .orb-1 {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%);
+    top: -100px; right: -80px;
+    animation: orbFloat1 18s ease-in-out infinite;
+  }
+  .orb-2 {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(201,168,76,0.05) 0%, transparent 70%);
+    bottom: -50px; left: -60px;
+    animation: orbFloat2 22s ease-in-out infinite;
+  }
+
+  /* Floating particles */
+  #particles { position: fixed; inset: 0; z-index: 3; pointer-events: none; }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(22px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+  }
+  @keyframes orbFloat1 {
+    0%, 100% { transform: translate(0, 0); }
+    33% { transform: translate(-30px, 40px); }
+    66% { transform: translate(20px, -20px); }
+  }
+  @keyframes orbFloat2 {
+    0%, 100% { transform: translate(0, 0); }
+    40% { transform: translate(30px, -30px); }
+    70% { transform: translate(-15px, 20px); }
+  }
+
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- Grid canvas -->
+<canvas id="grid-canvas"></canvas>
+
+<!-- Particles -->
+<canvas id="particles"></canvas>
+
+<!-- Atmospheric orbs -->
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<!-- Corner marks -->
+<div class="corner corner--tl"></div>
+<div class="corner corner--tr"></div>
+<div class="corner corner--bl"></div>
+<div class="corner corner--br"></div>
+
+<!-- Top bar -->
+<div id="topbar">
+  <span class="logo-type">Jariwala&nbsp;Mail</span>
+  <span class="status-pill">
+    <span class="status-dot"></span>
+    In Development
+  </span>
+</div>
+
+<!-- Main stage -->
+<div id="stage">
+  <p class="eyebrow">The Studio Behind the Icons</p>
+
+  <h1 class="headline">
+    Some&shy;thing<br><em>Remark&shy;able</em><br>is Coming
+  </h1>
+
+  <p class="subline">jariwalamail.com — est. 2012</p>
+
+  <div class="rule"></div>
+
+  <p class="description">
+    A new kind of creative communication, crafted with the precision that shaped campaigns for the world's most unforgettable brands.
+  </p>
+
+  <div id="notify-form">
+    <input type="email" placeholder="your@email.com" id="email-input" autocomplete="off">
+    <button onclick="handleNotify()">Notify Me</button>
+    <div id="success-msg">You're on the list — we'll be in touch.</div>
+  </div>
+</div>
+
+<!-- Bottom bar -->
+<div id="bottombar">
+  <span class="bottom-text">© 2025 Jariwala Mail</span>
+  <span class="bottom-text">Toronto · Ahmedabad</span>
+  <span class="bottom-text">Est. MMXII</span>
+</div>
+
+<script>
+// ─── Custom cursor ─────────────────────────────────────────────────────────
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+(function animCursor() {
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+  ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+  requestAnimationFrame(animCursor);
+})();
+document.querySelectorAll('button, input').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    cursor.style.width = '18px'; cursor.style.height = '18px';
+    cursor.style.background = 'rgba(201,168,76,0.5)';
+  });
+  el.addEventListener('mouseleave', () => {
+    cursor.style.width = '10px'; cursor.style.height = '10px';
+    cursor.style.background = '#c9a84c';
+  });
+});
+
+// ─── Grid canvas ───────────────────────────────────────────────────────────
+const gc = document.getElementById('grid-canvas');
+const gx = gc.getContext('2d');
+function drawGrid() {
+  gc.width = window.innerWidth; gc.height = window.innerHeight;
+  const s = 64;
+  gx.strokeStyle = 'rgba(201,168,76,0.6)';
+  gx.lineWidth = 0.4;
+  for (let x = 0; x <= gc.width; x += s) {
+    gx.beginPath(); gx.moveTo(x, 0); gx.lineTo(x, gc.height); gx.stroke();
+  }
+  for (let y = 0; y <= gc.height; y += s) {
+    gx.beginPath(); gx.moveTo(0, y); gx.lineTo(gc.width, y); gx.stroke();
+  }
+  // Highlight intersections
+  gx.fillStyle = 'rgba(201,168,76,0.5)';
+  for (let x = 0; x <= gc.width; x += s) {
+    for (let y = 0; y <= gc.height; y += s) {
+      gx.beginPath(); gx.arc(x, y, 1, 0, Math.PI * 2); gx.fill();
+    }
+  }
+}
+drawGrid();
+window.addEventListener('resize', drawGrid);
+
+// ─── Particles ─────────────────────────────────────────────────────────────
+const pc = document.getElementById('particles');
+const px = pc.getContext('2d');
+pc.width = window.innerWidth; pc.height = window.innerHeight;
+window.addEventListener('resize', () => { pc.width = window.innerWidth; pc.height = window.innerHeight; });
+
+const particles = Array.from({ length: 55 }, () => ({
+  x: Math.random() * window.innerWidth,
+  y: Math.random() * window.innerHeight,
+  r: Math.random() * 1.2 + 0.3,
+  vx: (Math.random() - 0.5) * 0.18,
+  vy: -Math.random() * 0.25 - 0.08,
+  alpha: Math.random() * 0.4 + 0.05,
+  life: Math.random()
+}));
+
+function animParticles() {
+  px.clearRect(0, 0, pc.width, pc.height);
+  particles.forEach(p => {
+    p.x += p.vx; p.y += p.vy;
+    if (p.y < -10) { p.y = pc.height + 10; p.x = Math.random() * pc.width; }
+    px.beginPath();
+    px.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    px.fillStyle = `rgba(201,168,76,${p.alpha})`;
+    px.fill();
+  });
+  requestAnimationFrame(animParticles);
+}
+animParticles();
+
+// ─── Notify form ───────────────────────────────────────────────────────────
+function handleNotify() {
+  const input = document.getElementById('email-input');
+  const msg = document.getElementById('success-msg');
+  if (!input.value || !input.value.includes('@')) {
+    input.style.borderColor = 'rgba(220,80,60,0.7)';
+    setTimeout(() => { input.style.borderColor = ''; }, 1200);
+    return;
+  }
+  msg.style.display = 'flex';
+}
+
+// ─── Headline shimmer on hover ─────────────────────────────────────────────
+document.querySelector('.headline').addEventListener('mousemove', function(e) {
+  const r = this.getBoundingClientRect();
+  const x = ((e.clientX - r.left) / r.width) * 100;
+  const y = ((e.clientY - r.top) / r.height) * 100;
+  this.style.backgroundImage = `radial-gradient(circle at ${x}% ${y}%, #fff 0%, #e8cc82 30%, #f5f0e8 100%)`;
+  this.style.webkitBackgroundClip = 'text';
+  this.style.backgroundClip = 'text';
+  this.style.webkitTextFillColor = 'transparent';
+});
+document.querySelector('.headline').addEventListener('mouseleave', function() {
+  this.style.backgroundImage = '';
+  this.style.webkitBackgroundClip = '';
+  this.style.backgroundClip = '';
+  this.style.webkitTextFillColor = '';
+});
+</script>
+</body>
+</html>
